@@ -12,17 +12,25 @@ class App extends Component {
     players: [],
     balance: "",
     value: "",
-    message: ""
+    message: "",
+    isManager: false
   };
 
   async componentDidMount(){
 
     const manager = await lottery.methods.manager().call();
+    const accounts = await web3.eth.getAccounts();
     const players = await lottery.methods.getPlayers().call();
     const balance = await web3.eth.getBalance(lottery.options.address);
 
 
     this.setState(()=>({ manager, players, balance }));
+
+  
+    if(accounts[0] === this.state.manager){
+      this.setState(()=>({isManager: true}));
+    }
+
   }
 
   onSubmit = async (event) =>{
@@ -39,6 +47,19 @@ class App extends Component {
 
     this.setState({ message: "You have been entered" });
   };
+
+  onClick = async ()=>{
+    const accounts = await web3.eth.getAccounts();
+
+    this.setState({ message: "Waiting on transactions success...." });
+
+    await lottery.methods.pickWinner().send({
+      from: accounts[0]
+    });
+
+    this.setState({ message: "A winner has been picked" });
+
+  }; 
 
   render() {
     return (
@@ -65,6 +86,15 @@ class App extends Component {
         </form>
 
         <hr />
+
+        {this.state.isManager && (
+          <div>
+            <h4>Ready to pick a winner ?</h4>
+            <button onClick={this.onClick}>Pick a winner</button>
+            <hr />
+          </div>
+        )}
+        
 
         <h1>{this.state.message}</h1>
       </div>
