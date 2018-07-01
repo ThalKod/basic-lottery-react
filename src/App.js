@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 import web3 from "./web3";
@@ -94,7 +93,7 @@ class App extends Component {
             <hr />
           </div>
         )}
-        
+
 
         <h1>{this.state.message}</h1>
       </div>
